@@ -3,66 +3,85 @@ import numpy as np
 
 
 class Camera:
-	# Position and direction of the camera lens
-	POS: np.array([[float]])
-	DIR: np.array([[float]])
+    # Position and direction of the camera lens
+    POS: np.array([[float]])
+    DIR: np.array([[float]])
 
-	ball_pos: np.array([[float]])
-	ball_vect: np.array([[float]])
+    ball_pos: np.array([[float]])
+    ball_vect: np.array([[float]])
 
-	def __init__(self, position: np.array([[float]]), direction: np.array([[float]])):
-		self.POS = position
-		self.DIR = direction
+    not_found: bool = False
 
-	def normalize_direction(self, direction: np.array([[float]])):
-		# Normalize the camera direction vector to a length of 10 cm
-		length = np.sqrt(np.square(direction[0]) + np.square(direction[1]) + np.square(direction[2]))
-		self.DIR = np.array([[(direction[0]/length)*10], [(direction[1]/length)*10], [(direction[2]/length)*10]])
+    def __init__(self, position: np.array([[float]])):
+        self.POS = position
+
+    def normalize_direction(self, direction: np.array([[float]])):
+        # Normalize the camera direction vector to a length of 10 cm
+        length = np.sqrt(np.square(direction[0]) + np.square(direction[1]) + np.square(direction[2]))
+        self.DIR = np.array([(direction[0] / length) * 10, (direction[1] / length) * 10, (direction[2] / length) * 10])
+
+
+class InsufficientDataException(BaseException):
+    pass
 
 
 # Class contains variables and functions for triangulation
 class Triangulation:
-	FACTOR_X = 1
-	FACTOR_Y = 1
-	NUM_CAMS = 2
+    FACTOR_X = 1
+    FACTOR_Y = 1
 
-	# List of available cameras
-	cameras: List[Camera]
+    # List of available cameras
+    cameras: List[Camera]
 
-	def __init__(self, camera_list: List[Camera]):
-		self.cameras = camera_list
+    results = []
 
-	def calculate_position(self):
-		# Empty the directions list
-		self.directions.clear()
-		# Calculate the directional vector of the ball
-		for camera in self.cameras:
-			# Horizontal picture vector
-			horizontal_picture = np.cross(camera.DIR, np.array([0, 1, 0]))
-			# Vertical picture vector
-			vertical_picture = np.cross(camera.DIR, horizontal_picture)
-			# Set length to 1
-			horizontal_picture /= np.sqrt(np.square(horizontal_picture[0]) + np.square(horizontal_picture[1]) + np.square(horizontal_picture[2]))
-			vertical_picture /= np.sqrt(np.square(vertical_picture[0]) + np.square(vertical_picture[1]) + np.square(vertical_picture[2]))
+    def __init__(self, camera_list: List[Camera]):
+        self.cameras = camera_list
 
-			# Calculate ball directional vector
-			ball_direction = camera.POS + camera.DIR + np.dot(camera.ball_pos[0] * self.FACTOR_X, horizontal_picture) + np.dot(camera.ball_pos[1] * self.FACTOR_Y, vertical_picture)
-			camera.ball_vect = ball_direction
+    def calculate_position(self):
+        # Empty the results List
+        self.results.clear()
+        # Calculate the directional vector of the ball
+        for camera in self.cameras:
+            # Continue if ball is invisible for current camera
+            if camera.not_found:
+                continue
+            # Horizontal picture vector
+            horizontal_picture = np.cross(camera.DIR, np.array([0, 0, 1]), axis=0)
+            # Vertical picture vector
+            vertical_picture = np.cross(horizontal_picture, camera.DIR, axis=0) / 100
 
-		for camera1 in self.cameras:
-			for camera2 in self.cameras:
-				if camera1 == camera2:
-					continue
-				normalized = np.cross(camera1.ball_vect, camera2.ball_vect)
-				# "camera1.POS + r * camera1.ball_vect + s * normalized" is a level orthogonal to both ball vectors
-				# Equal it to camera2.ball_vect and we get the points on both vectors where they are closest to each other
-				# r * camera1.ball_vect + s * normalized - t * camera2.ball_vect = camera2.POS - camera1.POS
-				a = np.array([camera1.POS, normalized, camera2.ball_vect])
-				b = np.array(camera2.POS - camera1.POS)
-				result = np.linalg.solve(a, b)
-				# r = result[0], s = result[1], -t = result[2]
-				point1 = camera1.POS + result[0] * camera1.ball_vect
-				point2 = camera2.POS - result[2] * camera2.ball_vect
-				# Calculate distance between both points to check if the result is acceptable
-				distance_vect = point1 - point2
-				distance = np.sqrt(np.square(distance_vect[0]) + np.square(distance_vect[1]) + np.square(distance_vect[2]))
+            # Calculate ball directional vector
+            ball_direction = camera.DIR + (camera.ball_pos[0] * self.FACTOR_X) * horizontal_picture + (
+                    camera.ball_pos[1] * self.FACTOR_Y) * vertical_picture
+            camera.ball_vect = ball_direction
+
+        for camera1 in self.cameras:
+            if camera1.not_found:
+                continue
+            for camera2 in self.cameras:
+                if (camera1 == camera2) or camera2.not_found:
+                    continue
+                normalized = np.cross(camera1.ball_vect, camera2.ball_vect)
+                # "camera1.POS + r * camera1.ball_vect + s * normalized" is a plane orthogonal to both ball vectors
+                # Equal it to camera2.ball_vect and we get the points on both vectors where they are closest to each other
+                # r * camera1.ball_vect + s * normalized - t * camera2.ball_vect = camera2.POS - camera1.POS
+                A = np.array([[camera1.ball_vect[0], normalized[0], -camera2.ball_vect[0]],
+                              [camera1.ball_vect[1], normalized[1], -camera2.ball_vect[1]],
+                              [camera1.ball_vect[2], normalized[2], -camera2.ball_vect[2]]])
+                b = np.array(camera2.POS - camera1.POS)
+                result = np.linalg.solve(A, b)
+                # result = [r, s, t]
+                point1 = camera1.POS + camera1.ball_vect * result[0]
+                point2 = camera2.POS + camera2.ball_vect * result[2]
+                dist_vect = point1 - point2
+                length = np.sqrt(np.sqare(dist_vect[0]) + np.square(dist_vect[1]) + np.square(dist_vect[2]))
+                if length < 10:
+                    self.results.append(point1)
+                    self.results.append(point2)
+
+        # Return false in case no accurate position could be calculated
+        if self.results.__len__() < 1:
+            raise InsufficientDataException
+        else:
+            return self.results
