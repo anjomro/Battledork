@@ -6,7 +6,10 @@ import cv2
 
 if __name__ == '__main__':
     NUM_CAMS = 4
+    # List of video sources
     source_list = []
+    # List will contain points of the flying curve
+    ball_curve = []
 
     camera1 = Camera(np.array([[1.0], [1.0], [1.0]]))
     camera1.DIR = np.array([[1.0], [0.0], [1.0]])
@@ -21,20 +24,36 @@ if __name__ == '__main__':
     triangulation = Triangulation([camera1, camera2, camera3, camera4])
 
     for i in range(NUM_CAMS):
-        src = cv2.VideoCapture("Path/to/file.mp4")
+        src = cv2.VideoCapture("Path/to/file_i.mp4")
         source_list.append(src)
 
     while True:
         no_img = False
         for i in range(NUM_CAMS):
             ret, img = source_list[i].read()
+            # ret is false if no more frames available
             if not ret:
                 no_img = True
                 break
+            # Get ball coordinates in frame
             coordinates = tracking.process_frame(img)
-            triangulation.cameras[i].ball_pos = coordinates
+            # If ball was not found, set boolean in camera. Else, write coordinates to camera
+            current_cam = triangulation.cameras[i]
+            if coordinates is None:
+                current_cam.not_found = True
+            else:
+                current_cam.not_found = False
+                current_cam.ball_pos = coordinates
 
+        # Break out of the loop if no more frames are provided
         if no_img:
             break
 
+        # Calculate ball position from camera angles
         results = triangulation.calculate_position()
+        # Take the average of the result list and add it to the curve
+        average = np.array([[float], [float], [float]])
+        for vector in results:
+            average += vector
+        average /= len(results)
+        ball_curve.append(average)
