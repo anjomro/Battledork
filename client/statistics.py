@@ -16,7 +16,7 @@ class Statistics:
             if position == np.array([[0], [0], [-10]]):
                 continue
             # New direction either positive or negative
-            new_direction = (position-last_position > 0)
+            new_direction = (position[1]-last_position[1] > 0)
             # If new direction is different, count a hit
             if new_direction != direction:
                 hits += 1
