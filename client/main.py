@@ -6,27 +6,25 @@ import numpy as np
 import cv2
 
 if __name__ == '__main__':
-    NUM_CAMS = 4
+    NUM_CAMS = 2
     # List of video sources
     source_list = []
     # List will contain points of the flying curve
     ball_curve = []
 
-    camera1 = Camera(np.array([[1.0], [1.0], [1.0]]))
-    camera1.DIR = np.array([[1.0], [0.0], [1.0]])
-    camera2 = Camera(np.array([[1.0], [1.0], [1.0]]))
-    camera2.DIR = np.array([[1.0], [0.0], [1.0]])
-    camera3 = Camera(np.array([[1.0], [1.0], [1.0]]))
-    camera3.DIR = np.array([[1.0], [0.0], [1.0]])
-    camera4 = Camera(np.array([[1.0], [1.0], [1.0]]))
-    camera4.DIR = np.array([[1.0], [0.0], [1.0]])
+    camera1 = Camera(np.array([-100, -100, 100]))
+    camera1.normalize_direction(np.array([1, 1, 0]))
+    camera2 = Camera(np.array([-100, 100, 100]))
+    camera2.normalize_direction(np.array([1, -1, 0]))
+    camera3 = None
+    camera4 = None
 
     tracking = Tracking()
-    triangulation = Triangulation([camera1, camera2, camera3, camera4])
-    filename = "Battledork_180s_tonic-tradition_2021-05-30+18:40:33_"
+    triangulation = Triangulation([camera1, camera2])
+    filename = "Battledork_180s_tonic-tradition__2021-05-30+18 40 33__{}.mp4"
 
     for i in range(NUM_CAMS):
-        src = cv2.VideoCapture(filename + i)
+        src = cv2.VideoCapture(filename.format(i))
         source_list.append(src)
 
     while True:
@@ -38,12 +36,13 @@ if __name__ == '__main__':
                 no_img = True
                 break
             # Get ball coordinates in frame
-            coordinates = tracking.process_frame(img)
+            coordinates_tuple = tracking.process_frame(img)
             # If ball was not found, set boolean in camera. Else, write coordinates to camera
             current_cam = triangulation.cameras[i]
-            if coordinates is None:
+            if coordinates_tuple is None:
                 current_cam.not_found = True
             else:
+                coordinates = np.array([coordinates_tuple[0], coordinates_tuple[1]])
                 current_cam.not_found = False
                 current_cam.ball_pos = coordinates
 

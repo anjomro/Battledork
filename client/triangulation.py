@@ -75,7 +75,7 @@ class Triangulation:
                 point1 = camera1.POS + camera1.ball_vect * result[0]
                 point2 = camera2.POS + camera2.ball_vect * result[2]
                 dist_vect = point1 - point2
-                length = np.sqrt(np.sqare(dist_vect[0]) + np.square(dist_vect[1]) + np.square(dist_vect[2]))
+                length = np.sqrt(np.square(dist_vect[0]) + np.square(dist_vect[1]) + np.square(dist_vect[2]))
                 if length < 10:
                     self.results.append(point1)
                     self.results.append(point2)
@@ -85,8 +85,8 @@ class Triangulation:
             raise InsufficientDataException
         else:
             # Calculate the average of all results
-            average = np.array([[float]])
-            for vector in self.results:
+            average = self.results[0]
+            for vector in self.results[1:]:
                 average += vector
             average /= self.results.__len__()
             return average
