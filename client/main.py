@@ -26,7 +26,7 @@ if __name__ == '__main__':
     filename = "Battledork_180s_tonic-tradition_2021-05-30+18:40:33_"
 
     for i in range(NUM_CAMS):
-        src = cv2.VideoCapture(filename + "_" + i)
+        src = cv2.VideoCapture(filename + i)
         source_list.append(src)
 
     while True:
