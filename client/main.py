@@ -1,5 +1,6 @@
 from tracking import Tracking
 from triangulation import Triangulation, Camera, InsufficientDataException
+from statistics import Statistics
 
 import numpy as np
 import cv2
@@ -22,9 +23,10 @@ if __name__ == '__main__':
 
     tracking = Tracking()
     triangulation = Triangulation([camera1, camera2, camera3, camera4])
+    filename = "Battledork_180s_tonic-tradition_2021-05-30+18:40:33_"
 
     for i in range(NUM_CAMS):
-        src = cv2.VideoCapture("Path/to/file_i.mp4")
+        src = cv2.VideoCapture(filename + "_" + i)
         source_list.append(src)
 
     while True:
@@ -53,5 +55,11 @@ if __name__ == '__main__':
         try:
             ball_curve.append(triangulation.calculate_position())
         except InsufficientDataException:
-            # Set (0, 0, 0) if ball position is unknown
-            ball_curve.append(np.array([[0], [0], [0]]))
+            # Fill curve with impossible position
+            ball_curve.append(np.array([[0], [0], [-10]]))
+
+    print(ball_curve)
+
+    stats = Statistics(ball_curve)
+    hits = stats.count_hits()
+    print(hits)
