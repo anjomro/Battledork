@@ -1,5 +1,5 @@
 from tracking import Tracking
-from triangulation import Triangulation, Camera
+from triangulation import Triangulation, Camera, InsufficientDataException
 
 import numpy as np
 import cv2
@@ -50,10 +50,8 @@ if __name__ == '__main__':
             break
 
         # Calculate ball position from camera angles
-        results = triangulation.calculate_position()
-        # Take the average of the result list and add it to the curve
-        average = np.array([[float], [float], [float]])
-        for vector in results:
-            average += vector
-        average /= len(results)
-        ball_curve.append(average)
+        try:
+            ball_curve.append(triangulation.calculate_position())
+        except InsufficientDataException:
+            # Set (0, 0, 0) if ball position is unknown
+            ball_curve.append(np.array([[0], [0], [0]]))

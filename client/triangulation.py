@@ -84,4 +84,9 @@ class Triangulation:
         if self.results.__len__() < 1:
             raise InsufficientDataException
         else:
-            return self.results
+            # Calculate the average of all results
+            average = np.array([[float]])
+            for vector in self.results:
+                average += vector
+            average /= self.results.__len__()
+            return average
