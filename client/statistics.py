@@ -9,16 +9,16 @@ class Statistics:
 
     def count_hits(self):
         last_position = self.curve[0]
-        direction = 0
         hits = 0
         # Iterate over curve to find changes in direction
         for position in self.curve[1:]:
-            if position[0] == 0 and position[1] == 0 and position[2] == -10:
+            # y coordinate will be zero if ball was not found
+            # if ball is directly over the net, check if it crosses in next step
+            if position[1] == 0:
                 continue
-            # New direction either positive or negative
-            new_direction = (position[1]-last_position[1] > 0)
-            # If new direction is different, count a hit
-            if new_direction != direction:
+            # Detect if ball crossed the net
+            # multiplied y coordinates will be negative if ball crossed the net
+            if last_position[1] * position[1] < 0:
                 hits += 1
-                direction = new_direction
+            last_position = position
         return hits
