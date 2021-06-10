@@ -13,7 +13,7 @@ class Statistics:
         hits = 0
         # Iterate over curve to find changes in direction
         for position in self.curve[1:]:
-            if position == np.array([[0], [0], [-10]]):
+            if position[0] == 0 and position[1] == 0 and position[2] == -10:
                 continue
             # New direction either positive or negative
             new_direction = (position[1]-last_position[1] > 0)
