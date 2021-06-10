@@ -27,8 +27,8 @@ class InsufficientDataException(BaseException):
 
 # Class contains variables and functions for triangulation
 class Triangulation:
-    FACTOR_X = 1
-    FACTOR_Y = 1
+    FACTOR_X = 1/138
+    FACTOR_Y = 1/138
 
     # List of available cameras
     cameras: List[Camera]
