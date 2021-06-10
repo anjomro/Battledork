@@ -31,7 +31,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 
 
 if __name__ == '__main__':
-    NUM_CAMS = 4
+    NUM_CAMS = 2
     # List of video sources
     source_list = []
     # List will contain points of the flying curve
@@ -47,7 +47,7 @@ if __name__ == '__main__':
     camera4.normalize_direction(np.array([205.669, 216.506, -84]))
 
     tracking = Tracking()
-    triangulation = Triangulation([camera1, camera2, camera3, camera4])
+    triangulation = Triangulation([camera1, camera2])
     filename = "Battledork_180s_tonic-tradition__2021-05-30+18 40 33__{}.h264"
 
     frame_counter = 0

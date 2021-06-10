@@ -21,10 +21,16 @@ class Tracking:
 
         conts = cv2.findContours(maskClose, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         conts = imutils.grab_contours(conts)
+        good_conts = []
         center = None
 
-        if len(conts) > 0:
-            c = max(conts, key=cv2.contourArea)
+        for c in conts:
+            ((x, y), radius) = cv2.minEnclosingCircle(c)
+            if radius < 15:
+                good_conts.append(c)
+
+        if len(good_conts) > 0:
+            c = max(good_conts, key=cv2.contourArea)
             mom = cv2.moments(c)
             center = (int(mom["m10"] / mom["m00"]), int(mom["m01"] / mom["m00"]))
 
