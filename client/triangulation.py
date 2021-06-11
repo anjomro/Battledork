@@ -48,8 +48,10 @@ class Triangulation:
                 continue
             # Horizontal picture vector
             horizontal_picture = np.cross(camera.DIR, np.array([0, 0, 1]), axis=0)
+            horizontal_picture /= np.sqrt(np.square(horizontal_picture[0]) + np.square(horizontal_picture[1]) + np.square(horizontal_picture[2]))
             # Vertical picture vector
             vertical_picture = np.cross(horizontal_picture, camera.DIR, axis=0) / 100
+            vertical_picture /= np.sqrt(np.square(vertical_picture[0]) + np.square(vertical_picture[1]) + np.square(vertical_picture[2]))
 
             # Calculate ball directional vector
             ball_direction = camera.DIR + (camera.ball_pos[0] * self.FACTOR_X) * horizontal_picture + (

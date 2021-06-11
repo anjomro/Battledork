@@ -36,8 +36,9 @@ class Tracking:
             center = (int(mom["m10"] / mom["m00"]), int(mom["m01"] / mom["m00"]))
             cv2.drawContours(frame, c, -1, (255, 0, 0), 3)
 
-        # cv2.imshow("Camera {}".format(cam_index), frame)
-        # cv2.waitKey(1)
+        resized = cv2.resize(frame, (640, 360))
+        cv2.imshow("Camera {}".format(cam_index), resized)
+        cv2.waitKey(1)
 
         self.background_list[cam_index] = mask
 

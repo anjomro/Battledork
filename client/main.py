@@ -38,9 +38,9 @@ if __name__ == '__main__':
     ball_curve = []
 
     camera1 = Camera(np.array([250, -275, 84]))
-    camera1.normalize_direction(np.array([-225.082, 233.359, -84]))
+    camera1.normalize_direction(np.array([-211.9, 225,77, -84]))
     camera2 = Camera(np.array([250, 275, 84]))
-    camera2.normalize_direction(np.array([-235.76, -230.35, -84]))
+    camera2.normalize_direction(np.array([-221.41, -223.62, -84]))
     camera3 = Camera(np.array([-250, 275, 84]))
     camera3.normalize_direction(np.array([203.077, -208.711, -84]))
     camera4 = Camera(np.array([-250, -275, 84]))
