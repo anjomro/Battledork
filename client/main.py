@@ -55,8 +55,11 @@ if __name__ == '__main__':
     for i in range(NUM_CAMS):
         src = cv2.VideoCapture(filename.format(i))
         source_list.append(src)
+        ret, first_img = src.read()
+        first_HSV = cv2.cvtColor(first_img, cv2.COLOR_BGR2HSV)
+        mask = cv2.inRange(first_HSV, tracking.lowerBound, tracking.upperBound)
+        tracking.background_list.append(mask)
 
-    print("Starting...")
 
     while True:
         no_img = False
@@ -67,7 +70,7 @@ if __name__ == '__main__':
                 no_img = True
                 break
             # Get ball coordinates in frame
-            coordinates_tuple = tracking.process_frame(img)
+            coordinates_tuple = tracking.process_frame(img, i)
             # If ball was not found, set boolean in camera. Else, write coordinates to camera
             current_cam = triangulation.cameras[i]
             if coordinates_tuple is None:

@@ -76,7 +76,7 @@ class Triangulation:
                 point2 = camera2.POS + camera2.ball_vect * result[2]
                 dist_vect = point1 - point2
                 length = np.sqrt(np.square(dist_vect[0]) + np.square(dist_vect[1]) + np.square(dist_vect[2]))
-                if length < 10:
+                if length < 10 and np.absolute(point1[0]) < 150 and np.absolute(point1[1]) < 300:
                     self.results.append(point1)
                     self.results.append(point2)
 
