@@ -32,7 +32,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
 
 if __name__ == '__main__':
 
-    print("Welcome to the table tennis ball tracking system")
+    print("Welcome to the table tennis ball tracking system\n")
     print("Reading config...")
 
     back_sub = False
@@ -41,6 +41,7 @@ if __name__ == '__main__':
     factor = 1
     res_x = 1
     res_y = 1
+    fps = 1
     total_frames = 0
 
     # Read data from config.yaml file
@@ -53,6 +54,7 @@ if __name__ == '__main__':
         factor = data['Factor']
         res_x = data['Res_X']
         res_y = data['Res_Y']
+        fps = data['FPS']
     except yaml.YAMLError as e:
         print(e)
         exit()
@@ -64,8 +66,8 @@ if __name__ == '__main__':
 
     tracking = Tracking()
     triangulation = Triangulation()
-    triangulation.FACTOR_X = factor
-    triangulation.FACTOR_Y = factor
+    triangulation.FACTOR_X = 1/factor
+    triangulation.FACTOR_Y = 1/factor
 
     # filename = "Battledork_180s_tonic-tradition__2021-05-30+18 40 33__{}.h264"
     print("Please enter the name of your files (replace number with '{}')")
@@ -135,3 +137,4 @@ if __name__ == '__main__':
     stats = Statistics(ball_curve)
     print("\n\nStatistics:\n")
     print("Hit counter: {}".format(stats.count_hits()))
+    print("Max. speed: {.2f} m/s".format(stats.max_speed(fps)))

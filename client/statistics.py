@@ -22,3 +22,17 @@ class Statistics:
                 hits += 1
             last_position = position
         return hits
+
+    def max_speed(self, fps):
+        max_speed = 0
+
+        for i in range(1, len(self.curve)):
+            if (self.curve[i][0] == 0) or (self.curve[i-1][0] == 0):
+                continue
+            dist = self.curve[i] - self.curve[i-1]
+            dist_len = np.sqrt(np.square(dist[0]) + np.square(dist[1]) + np.square(dist[2]))
+            speed = dist_len / 100 * fps
+            if speed > max_speed:
+                max_speed = speed
+
+        return max_speed

@@ -25,9 +25,10 @@ Camera_4:
 # Give the centimeter to pixel factor of the camera (measured 10 cm from the lens)
 Factor: 138
 
-# Give the camera resolution
+# Give the recording resolution and FPS
 Res_Y: 1280
 Res_X: 720
+FPS: 80
 
 # Use additional background subtraction, e.g. if the background has a similar color as the ball
 Back_Sub: True
