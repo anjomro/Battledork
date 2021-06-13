@@ -26,8 +26,8 @@ Camera_4:
 Factor: 138
 
 # Give the recording resolution and FPS
-Res_Y: 1280
-Res_X: 720
+Res_Y: 720
+Res_X: 1280
 FPS: 80
 
 # Use additional background subtraction, e.g. if the background has a similar color as the ball

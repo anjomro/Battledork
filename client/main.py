@@ -137,4 +137,5 @@ if __name__ == '__main__':
     stats = Statistics(ball_curve)
     print("\n\nStatistics:\n")
     print("Hit counter: {}".format(stats.count_hits()))
-    print("Max. speed: {.2f} m/s".format(stats.max_speed(fps)))
+    print("Max. speed: {0:.2f} m/s".format(stats.max_speed(fps)))
+    input()
