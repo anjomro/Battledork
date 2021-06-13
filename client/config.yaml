@@ -1,0 +1,37 @@
+# Give the number of cameras used
+NUM_CAMS: 4
+
+# Give the position and direction of each camera
+Camera_1:
+  POS: [250, -275, 84]
+  DIR: [-211.9, 225,77, -84]
+  Skip_frames: 0
+
+Camera_2:
+  POS: [250, 275, 84]
+  DIR: [-221.41, -223.62, -84]
+  Skip_frames: 1
+
+Camera_3:
+  POS: [-250, -275, 84]
+  DIR: [203.077, -208.711, -84]
+  Skip_frames: 1
+
+Camera_4:
+  POS: [-250, -275, 84]
+  DIR: [205.669, 216.506, -84]
+  Skip_frames: 0
+
+# Give the centimeter to pixel factor of the camera (measured 10 cm from the lens)
+Factor: 138
+
+# Give the camera resolution
+Res_Y: 1280
+Res_X: 720
+
+# Use additional background subtraction, e.g. if the background has a similar color as the ball
+Back_Sub: True
+
+# Display the camera images while processing
+Show_Images: False
+

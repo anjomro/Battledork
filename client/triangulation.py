@@ -27,15 +27,15 @@ class InsufficientDataException(BaseException):
 
 # Class contains variables and functions for triangulation
 class Triangulation:
-    FACTOR_X = 1/138
-    FACTOR_Y = 1/138
+    FACTOR_X = 1
+    FACTOR_Y = 1
 
     # List of available cameras
     cameras: List[Camera]
 
     results = []
 
-    def __init__(self, camera_list: List[Camera]):
+    def __init__(self, camera_list: List[Camera] = []):
         self.cameras = camera_list
 
     def calculate_position(self):
