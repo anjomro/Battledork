@@ -1,3 +1,5 @@
+from typing import List
+
 from tracking import Tracking
 from triangulation import Triangulation, Camera, InsufficientDataException
 from statistics import Statistics
@@ -5,6 +7,7 @@ from statistics import Statistics
 import numpy as np
 import cv2
 import yaml
+import csv
 
 # Taken from https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
 # Print iterations progress
@@ -63,7 +66,7 @@ if __name__ == '__main__':
     source_list = []
     # List will contain points of the flying curve
     ball_curve = []
-
+    position_list: List[List[int]] = []
     tracking = Tracking()
     triangulation = Triangulation()
     triangulation.FACTOR_X = 1/factor
@@ -71,7 +74,8 @@ if __name__ == '__main__':
 
     # filename = "Battledork_180s_tonic-tradition__2021-05-30+18 40 33__{}.h264"
     print("Please enter the name of your files (replace number with '{}')")
-    filename = input("File: ")
+    filename = input("File :")
+    #filename = "Battledork_180s_tonic-tradition__2021-05-30+18:40:33__{}.mp4"
 
     frame_counter = 0
 
@@ -126,11 +130,17 @@ if __name__ == '__main__':
 
         # Calculate ball position from camera angles
         try:
-            ball_curve.append(triangulation.calculate_position())
+            position = triangulation.calculate_position()
+            ball_curve.append(position)
+            position_list.append(position.tolist())
         except InsufficientDataException:
             # Fill curve with impossible position
             ball_curve.append(np.array([[0], [0], [-10]]))
-
+            #for simulation use last good position
+            if len(position_list) <= 0:
+                position_list.append([0,0,0])
+            else:
+                position_list.append(position_list[-1])
         frame_counter += 1
         printProgressBar(frame_counter, total_frames, prefix="Progress:", length=50)
 
@@ -138,4 +148,8 @@ if __name__ == '__main__':
     print("\n\nStatistics:\n")
     print("Hit counter: {}".format(stats.count_hits()))
     print("Max. speed: {0:.2f} m/s".format(stats.max_speed(fps)))
+    np.savetxt("result.csv",
+               position_list,
+               delimiter=", ",
+               fmt='% s')
     input()
